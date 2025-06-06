@@ -14,7 +14,8 @@ public class AuthResponse {
     private Long id;
     private String nome;
     private String email;
-    private String papel;
+    private Usuario.Role papel;
+    private String token;
 
     public static AuthResponse fromUsuario(Usuario usuario) {
         return AuthResponse.builder()
@@ -22,6 +23,16 @@ public class AuthResponse {
                 .nome(usuario.getNome())
                 .email(usuario.getEmail())
                 .papel(usuario.getPapel())
+                .build();
+    }
+
+    public static AuthResponse fromUsuarioWithToken(Usuario usuario, String token) {
+        return AuthResponse.builder()
+                .id(usuario.getId())
+                .nome(usuario.getNome())
+                .email(usuario.getEmail())
+                .papel(usuario.getPapel())
+                .token(token)
                 .build();
     }
 } 

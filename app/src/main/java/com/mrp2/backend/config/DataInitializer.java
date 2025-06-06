@@ -41,24 +41,24 @@ public class DataInitializer implements CommandLineRunner {
 
             // Criar usuários
             createOrUpdateUser(
-                "admin@admin.com",
+                "admin@mrp2.com",
                 "Administrador",
                 "admin123",
-                "ADMIN"
+                Usuario.Role.ADMIN
             );
 
             createOrUpdateUser(
-                "funcionario@empresa.com",
+                "funcionario@mrp2.com",
                 "Funcionário",
                 "func123",
-                "FUNCIONARIO"
+                Usuario.Role.FUNCIONARIO
             );
 
             createOrUpdateUser(
-                "manutencao@empresa.com",
+                "manutencao@mrp2.com",
                 "Manutenção",
                 "manut123",
-                "MANUTENCAO"
+                Usuario.Role.MANUTENCAO
             );
 
             // Verificar novamente o número de usuários
@@ -185,7 +185,7 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void createOrUpdateUser(String email, String nome, String senha, String papel) {
+    private void createOrUpdateUser(String email, String nome, String senha, Usuario.Role papel) {
         try {
             Optional<Usuario> existingUser = usuarioRepository.findByEmail(email);
             

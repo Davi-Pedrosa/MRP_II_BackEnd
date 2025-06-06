@@ -1,48 +1,47 @@
 package com.mrp2.backend.controller;
 
 import com.mrp2.backend.model.Usuario;
-import com.mrp2.backend.repository.UsuarioRepository;
+import com.mrp2.backend.service.AuthService;
 import com.mrp2.backend.service.dto.AuthResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @PostMapping("/registrar")
-    public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email já está em uso");
-        }
-
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        Usuario novoUsuario = usuarioRepository.save(usuario);
-        
-        return ResponseEntity.ok(AuthResponse.fromUsuario(novoUsuario));
-    }
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        Usuario usuario = usuarioRepository.findByEmail(credentials.get("email"))
-            .filter(user -> passwordEncoder.matches(credentials.get("senha"), user.getSenha()))
-            .orElse(null);
-
-        if (usuario == null) {
-            return ResponseEntity.badRequest().body("Credenciais inválidas");
+        try {
+            String token = authService.login(credentials.get("email"), credentials.get("senha"));
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "message", "Login realizado com sucesso"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Erro ao fazer login",
+                "message", e.getMessage()
+            ));
         }
+    }
 
-        return ResponseEntity.ok(AuthResponse.fromUsuario(usuario));
+    @PostMapping("/registrar")
+    public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
+        try {
+            Usuario novoUsuario = authService.registrar(usuario);
+            return ResponseEntity.ok(AuthResponse.fromUsuario(novoUsuario));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Erro ao registrar usuário",
+                "message", e.getMessage()
+            ));
+        }
     }
 } 

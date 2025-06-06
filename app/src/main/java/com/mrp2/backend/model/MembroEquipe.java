@@ -1,5 +1,6 @@
 package com.mrp2.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ public class MembroEquipe {
     @Column(name = "eficiencia")
     private Double eficiencia;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "equipe_id", nullable = false)
     private Equipe equipe;

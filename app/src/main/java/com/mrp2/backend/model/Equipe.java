@@ -1,5 +1,6 @@
 package com.mrp2.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -32,7 +33,8 @@ public class Equipe {
     @Column(name = "ultima_atualizacao")
     private LocalDateTime ultimaAtualizacao;
 
-    @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MembroEquipe> membros;
 
     @ElementCollection
